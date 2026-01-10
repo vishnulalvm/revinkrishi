@@ -11,6 +11,8 @@ class ActivityPage extends StatefulWidget {
 
 class _ActivityPageState extends State<ActivityPage> {
   bool _showPending = true;
+  bool _isWeekViewExpanded = false;
+  DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -23,138 +25,22 @@ class _ActivityPageState extends State<ActivityPage> {
             // AppBar Section
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.menu,
+              child: Center(
+                child: Text(
+                  'Schedule',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
                     color: isDark ? Colors.white : Colors.black87,
-                    size: 28.sp,
                   ),
-                  const Spacer(),
-                  Text(
-                    'Schedule',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                  const Spacer(),
-                  CircleAvatar(
-                    radius: 20.r,
-                    backgroundColor: Colors.orange.shade200,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.white,
-                      size: 20.sp,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 16.h),
-
-            // Pending/Completed Toggle
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Container(
-                height: 56.h,
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF243518)
-                      : Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(28.r),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _showPending = true;
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.all(4.w),
-                          decoration: BoxDecoration(
-                            color: _showPending
-                                ? const Color(0xFFB8E986)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(24.r),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.schedule,
-                                size: 20.sp,
-                                color: _showPending
-                                    ? Colors.black87
-                                    : (isDark ? Colors.white70 : Colors.black54),
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'Pending',
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: _showPending
-                                      ? Colors.black87
-                                      : (isDark ? Colors.white70 : Colors.black54),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _showPending = false;
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.all(4.w),
-                          decoration: BoxDecoration(
-                            color: !_showPending
-                                ? Colors.white
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(24.r),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.check_circle,
-                                size: 20.sp,
-                                color: !_showPending
-                                    ? Colors.black87
-                                    : (isDark ? Colors.white70 : Colors.black54),
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'Completed',
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: !_showPending
-                                      ? Colors.black87
-                                      : (isDark ? Colors.white70 : Colors.black54),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),
 
+            // Week View Bar
+            _buildWeekViewBar(isDark),
+
+    
             SizedBox(height: 24.h),
 
             // Tasks List
@@ -291,5 +177,266 @@ class _ActivityPageState extends State<ActivityPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildWeekViewBar(bool isDark) {
+    // Get current week dates
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final weekDates = List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
+
+    return Column(
+      children: [
+        // Week calendar with expand icon
+        Container(
+          // margin: EdgeInsets.symmetric(horizontal: 16.w),
+          padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 8.w),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF243518) : Colors.grey.shade200,
+            // borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: weekDates.map((date) {
+                  final isSelected = date.day == _selectedDate.day &&
+                      date.month == _selectedDate.month &&
+                      date.year == _selectedDate.year;
+                  final isToday = date.day == now.day &&
+                      date.month == now.month &&
+                      date.year == now.year;
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedDate = date;
+                      });
+                    },
+                    child: Container(
+                      width: 44.w,
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFFB8E986)
+                            : isToday
+                                ? (isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade300)
+                                : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _getWeekdayShort(date.weekday),
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w500,
+                              color: isSelected
+                                  ? Colors.black87
+                                  : (isDark ? Colors.white70 : Colors.black54),
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            '${date.day}',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? Colors.black87
+                                  : (isDark ? Colors.white : Colors.black87),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              // SizedBox(height: 8.h),
+              // Expand/Collapse icon
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isWeekViewExpanded = !_isWeekViewExpanded;
+                  });
+                },
+                child: Icon(
+                  _isWeekViewExpanded ? Icons.expand_less : Icons.expand_more,
+                  color: isDark ? Colors.white70 : Colors.black54,
+                  size: 20.sp,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Expandable full month calendar
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          height: _isWeekViewExpanded ? 280.h : 0,
+          child: _isWeekViewExpanded
+              ? Container(
+                  margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1a2612) : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: _buildFullCalendar(isDark),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFullCalendar(bool isDark) {
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
+    final lastDayOfMonth = DateTime(_selectedDate.year, _selectedDate.month + 1, 0);
+    final daysInMonth = lastDayOfMonth.day;
+    final startWeekday = firstDayOfMonth.weekday;
+
+    // Calculate days to show (including leading days from previous month)
+    final List<DateTime?> calendarDays = [];
+
+    // Add leading empty days
+    for (int i = 1; i < startWeekday; i++) {
+      calendarDays.add(null);
+    }
+
+    // Add days of current month
+    for (int day = 1; day <= daysInMonth; day++) {
+      calendarDays.add(DateTime(_selectedDate.year, _selectedDate.month, day));
+    }
+
+    return Column(
+      children: [
+        // Month and Year header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: Icon(Icons.chevron_left, color: isDark ? Colors.white : Colors.black87),
+              onPressed: () {
+                setState(() {
+                  _selectedDate = DateTime(_selectedDate.year, _selectedDate.month - 1, 1);
+                });
+              },
+            ),
+            Text(
+              '${_getMonthNameFull(_selectedDate.month)} ${_selectedDate.year}',
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.chevron_right, color: isDark ? Colors.white : Colors.black87),
+              onPressed: () {
+                setState(() {
+                  _selectedDate = DateTime(_selectedDate.year, _selectedDate.month + 1, 1);
+                });
+              },
+            ),
+          ],
+        ),
+        SizedBox(height: 12.h),
+
+        // Weekday headers
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day) {
+            return SizedBox(
+              width: 36.w,
+              child: Center(
+                child: Text(
+                  day,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        SizedBox(height: 8.h),
+
+        // Calendar grid
+        Expanded(
+          child: GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              childAspectRatio: 1,
+            ),
+            itemCount: calendarDays.length,
+            itemBuilder: (context, index) {
+              final date = calendarDays[index];
+              if (date == null) {
+                return const SizedBox.shrink();
+              }
+
+              final isSelected = date.day == _selectedDate.day &&
+                  date.month == _selectedDate.month &&
+                  date.year == _selectedDate.year;
+              final isToday = date.day == now.day &&
+                  date.month == now.month &&
+                  date.year == now.year;
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedDate = date;
+                  });
+                },
+                child: Container(
+                  margin: EdgeInsets.all(2.w),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? const Color(0xFFB8E986)
+                        : isToday
+                            ? (isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade300)
+                            : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? Colors.black87
+                            : (isDark ? Colors.white : Colors.black87),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getMonthNameFull(int month) {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1];
+  }
+
+  String _getWeekdayShort(int weekday) {
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return weekdays[weekday - 1];
   }
 }

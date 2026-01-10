@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/themes/app_colors.dart';
 
 class CustomBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -17,80 +18,88 @@ class CustomBottomNav extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A2F0F) : const Color(0xFF2D5016),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20.r),
-        ),
+        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
       child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: 'Home',
-                index: 0,
-                isActive: currentIndex == 0,
-              ),
-              _buildNavItem(
-                icon: Icons.analytics_outlined,
-                activeIcon: Icons.analytics,
-                label: 'Activity',
-                index: 1,
-                isActive: currentIndex == 1,
-              ),
-              _buildNavItem(
-                icon: Icons.grid_view_outlined,
-                activeIcon: Icons.grid_view,
-                label: 'Fields',
-                index: 2,
-                isActive: currentIndex == 2,
-              ),
-              _buildNavItem(
-                icon: Icons.person_outline,
-                activeIcon: Icons.person,
-                label: 'Profile',
-                index: 3,
-                isActive: currentIndex == 3,
-              ),
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(
+              context: context,
+              icon: Icons.home_outlined,
+              activeIcon: Icons.home,
+              label: 'Home',
+              index: 0,
+              isActive: currentIndex == 0,
+            ),
+            _buildNavItem(
+              context: context,
+              icon: Icons.analytics_outlined,
+              activeIcon: Icons.analytics,
+              label: 'Activity',
+              index: 1,
+              isActive: currentIndex == 1,
+            ),
+            _buildNavItem(
+              context: context,
+              icon: Icons.grid_view_outlined,
+              activeIcon: Icons.grid_view,
+              label: 'Fields',
+              index: 2,
+              isActive: currentIndex == 2,
+            ),
+            _buildNavItem(
+              context: context,
+              icon: Icons.person_outline,
+              activeIcon: Icons.person,
+              label: 'Profile',
+              index: 3,
+              isActive: currentIndex == 3,
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildNavItem({
+    required BuildContext context,
     required IconData icon,
     required IconData activeIcon,
     required String label,
     required int index,
     required bool isActive,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeColor = isDark ? AppColors.darkPrimary : AppColors.lightPrimary;
+    final inactiveColor = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return GestureDetector(
       onTap: () => onTap(index),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-        decoration: BoxDecoration(
-          color: isActive ? Colors.white.withOpacity(0.15) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        padding: EdgeInsets.symmetric( vertical: 4.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               isActive ? activeIcon : icon,
-              color: Colors.white,
+              color: isActive ? activeColor : inactiveColor,
               size: 24.sp,
             ),
             SizedBox(height: 4.h),
             Text(
               label,
               style: TextStyle(
-                color: Colors.white,
+                color: isActive ? activeColor : inactiveColor,
                 fontSize: 12.sp,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               ),

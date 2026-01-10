@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/themes/app_colors.dart';
 
 class CropHealthCard extends StatelessWidget {
   const CropHealthCard({super.key});
@@ -7,13 +8,25 @@ class CropHealthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF243518) : const Color(0xFF3A5A28);
+    final cardColor = isDark ? AppColors.darkCardBackground : AppColors.lightCardBackground;
+    final textColor = isDark ? Colors.white : AppColors.lightText;
+    final secondaryTextColor = isDark ? Colors.white70 : AppColors.lightTextSecondary;
+    final tertiaryTextColor = isDark ? Colors.white60 : AppColors.lightTextTertiary;
 
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16.r),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Column(
         children: [
@@ -35,7 +48,7 @@ class CropHealthCard extends StatelessWidget {
               Text(
                 'Crop Health',
                 style: TextStyle(
-                  color: Colors.white70,
+                  color: secondaryTextColor,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -44,7 +57,7 @@ class CropHealthCard extends StatelessWidget {
               Text(
                 '85%',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
                 ),
@@ -57,7 +70,7 @@ class CropHealthCard extends StatelessWidget {
               Text(
                 'Overall analysis',
                 style: TextStyle(
-                  color: Colors.white60,
+                  color: tertiaryTextColor,
                   fontSize: 12.sp,
                 ),
               ),

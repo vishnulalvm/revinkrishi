@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/themes/app_colors.dart';
 
 class SensorCard extends StatelessWidget {
   final IconData icon;
@@ -22,13 +23,24 @@ class SensorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF243518) : const Color(0xFF3A5A28);
+    final cardColor = isDark ? AppColors.darkCardBackground : AppColors.lightCardBackground;
+    final textColor = isDark ? Colors.white : AppColors.lightText;
+    final secondaryTextColor = isDark ? Colors.white70 : AppColors.lightTextSecondary;
 
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16.r),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,14 +64,14 @@ class SensorCard extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  color: Colors.white70,
+                  color: secondaryTextColor,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 12.h),
           // Value
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -67,7 +79,7 @@ class SensorCard extends StatelessWidget {
               Text(
                 value,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 32.sp,
                   fontWeight: FontWeight.bold,
                 ),
@@ -92,7 +104,7 @@ class SensorCard extends StatelessWidget {
             SizedBox(height: 16.h),
             // Simple Chart
             SizedBox(
-              height: 40.h,
+              height: 30.h,
               child: CustomPaint(
                 size: Size(double.infinity, 40.h),
                 painter: SimpleCurvePainter(
