@@ -21,23 +21,23 @@ class _ActivityPageState extends State<ActivityPage> {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'Schedule',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.bold,
+            color: isDark ? AppColors.darkText : AppColors.lightText,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            // AppBar Section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: Center(
-                child: Text(
-                  'Schedule',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? AppColors.darkText : AppColors.lightText,
-                  ),
-                ),
-              ),
-            ),
 
             // Week View Bar
             _buildWeekViewBar(isDark),

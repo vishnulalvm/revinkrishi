@@ -12,13 +12,17 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Combined Weather Header (App Bar + Weather Card)
-              const WeatherHeader(),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Combined Weather Header (App Bar + Weather Card)
+            const WeatherHeader(),
 
               SizedBox(height: 16.h),
 
@@ -135,7 +139,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

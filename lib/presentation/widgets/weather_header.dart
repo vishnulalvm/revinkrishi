@@ -57,7 +57,7 @@ class _WeatherHeaderState extends State<WeatherHeader> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 16.h),
+            padding: EdgeInsets.fromLTRB(12.w, 60.h, 12.w, 16.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
