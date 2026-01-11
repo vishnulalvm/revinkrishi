@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/utils/weather_utils.dart';
+import '../bloc/weather/weather_bloc.dart';
+import '../bloc/weather/weather_state.dart';
 
 class WeatherCard extends StatelessWidget {
   const WeatherCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<WeatherBloc, WeatherState>(
+      builder: (context, state) {
+        if (state is WeatherLoaded) {
+          final weather = state.weather.current;
+          return _buildWeatherCard(context, weather);
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildWeatherCard(BuildContext context, currentWeather) {
     return Container(
       height: 280.h,
       margin: EdgeInsets.all(16.w),
@@ -78,7 +94,7 @@ class WeatherCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     Icon(
-                      Icons.wb_sunny_outlined,
+                      WeatherUtils.getWeatherIcon(currentWeather.weatherIcon),
                       color: Colors.white,
                       size: 40.sp,
                     ),
@@ -87,7 +103,7 @@ class WeatherCard extends StatelessWidget {
                 const Spacer(),
                 // Temperature
                 Text(
-                  '72°',
+                  WeatherUtils.formatTemp(currentWeather.temp),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 64.sp,
@@ -99,7 +115,8 @@ class WeatherCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      'Partly Cloudy',
+                      WeatherUtils.capitalizeWords(
+                          currentWeather.weatherDescription),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18.sp,
@@ -116,7 +133,7 @@ class WeatherCard extends StatelessWidget {
                     ),
                     SizedBox(width: 8.w),
                     Text(
-                      'Precipitation: 10%',
+                      'Feels like: ${WeatherUtils.formatTemp(currentWeather.feelsLike)}',
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 14.sp,

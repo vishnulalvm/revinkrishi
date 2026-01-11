@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import '../../core/utils/weather_utils.dart';
+import '../../domain/entities/weather_entity.dart';
+import '../bloc/weather/weather_bloc.dart';
+import '../bloc/weather/weather_state.dart';
 
 class WeatherHeader extends StatefulWidget {
   const WeatherHeader({super.key});
@@ -14,6 +19,21 @@ class _WeatherHeaderState extends State<WeatherHeader> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<WeatherBloc, WeatherState>(
+      builder: (context, state) {
+        if (state is WeatherLoading) {
+          return _buildLoadingSkeleton();
+        } else if (state is WeatherError) {
+          return _buildError(state.message);
+        } else if (state is WeatherLoaded) {
+          return _buildWeatherContent(state.weather);
+        }
+        return _buildLoadingSkeleton();
+      },
+    );
+  }
+
+  Widget _buildWeatherContent(WeatherEntity weather) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -155,7 +175,7 @@ class _WeatherHeaderState extends State<WeatherHeader> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      '72°',
+                      WeatherUtils.formatTemp(weather.current.temp),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 52.sp,
@@ -165,7 +185,8 @@ class _WeatherHeaderState extends State<WeatherHeader> {
                     // const Spacer(),
                     // Lottie Weather Animation
                     Lottie.asset(
-                      'assets/lottie/Weather-partly cloudy.json',
+                      WeatherUtils.getLottieAnimation(
+                          weather.current.weatherMain),
                       width: 40.w,
                       height: 40.h,
                       fit: BoxFit.contain,
@@ -183,7 +204,8 @@ class _WeatherHeaderState extends State<WeatherHeader> {
                   child: Row(
                     children: [
                       Text(
-                        'Partly Cloudy',
+                        WeatherUtils.capitalizeWords(
+                            weather.current.weatherDescription),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 15.sp,
@@ -200,7 +222,7 @@ class _WeatherHeaderState extends State<WeatherHeader> {
                       ),
                       SizedBox(width: 6.w),
                       Text(
-                        'Precipitation: 10%',
+                        'Humidity: ${weather.current.humidity}%',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 12.sp,
@@ -229,52 +251,22 @@ class _WeatherHeaderState extends State<WeatherHeader> {
                             SizedBox(height: 16.h),
                             SizedBox(
                               height: 70.h,
-                              child: ListView(
+                              child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
-                                children: [
-                                  _buildWeatherDay(
-                                    'Sat',
-                                    Icons.wb_sunny,
-                                    '32°',
-                                    '23°',
-                                    true,
-                                  ),
-                                  _buildWeatherDay(
-                                    'Sun',
-                                    Icons.cloud_queue,
-                                    '31°',
-                                    '23°',
-                                    false,
-                                  ),
-                                  _buildWeatherDay(
-                                    'Mon',
-                                    Icons.cloud_queue,
-                                    '32°',
-                                    '23°',
-                                    false,
-                                  ),
-                                  _buildWeatherDay(
-                                    'Tue',
-                                    Icons.cloud,
-                                    '32°',
-                                    '23°',
-                                    false,
-                                  ),
-                                  _buildWeatherDay(
-                                    'Wed',
-                                    Icons.wb_cloudy,
-                                    '32°',
-                                    '23°',
-                                    false,
-                                  ),
-                                  _buildWeatherDay(
-                                    'Thu',
-                                    Icons.wb_cloudy,
-                                    '32°',
-                                    '22°',
-                                    false,
-                                  ),
-                                ],
+                                itemCount: weather.daily.length > 7
+                                    ? 7
+                                    : weather.daily.length,
+                                itemBuilder: (context, index) {
+                                  final day = weather.daily[index];
+                                  return _buildWeatherDay(
+                                    WeatherUtils.getShortDayName(day.date),
+                                    WeatherUtils.getWeatherIcon(
+                                        day.weatherIcon),
+                                    WeatherUtils.formatTemp(day.tempMax),
+                                    WeatherUtils.formatTemp(day.tempMin),
+                                    index == 0,
+                                  );
+                                },
                               ),
                             ),
                           ],
@@ -341,6 +333,78 @@ class _WeatherHeaderState extends State<WeatherHeader> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingSkeleton() {
+    return Container(
+      width: double.infinity,
+      height: 300.h,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.grey.shade300,
+            Colors.grey.shade200,
+          ],
+        ),
+      ),
+      child: Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).primaryColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(String message) {
+    return Container(
+      width: double.infinity,
+      height: 300.h,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.red.shade100,
+            Colors.red.shade50,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 48.sp,
+                color: Colors.red.shade700,
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                'Unable to load weather',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red.shade900,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: Colors.red.shade700,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
