@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
 
@@ -58,7 +59,10 @@ class CustomBottomNav extends StatelessWidget {
       ),
       child: NavigationBar(
         selectedIndex: currentIndex,
-        onDestinationSelected: onTap,
+        onDestinationSelected: (index) {
+          HapticFeedback.selectionClick();
+          onTap(index);
+        },
         backgroundColor: isDark
             ? AppColors.darkSurface
             : AppColors.lightSurface,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
 import '../../core/utils/responsive_utils.dart';
@@ -81,6 +82,7 @@ class ProfilePage extends StatelessWidget {
                     // Edit Profile Button
                     ElevatedButton.icon(
                       onPressed: () {
+                        HapticFeedback.lightImpact();
                         // TODO: Implement edit profile
                       },
                       icon: Icon(Icons.edit, size: 18.sp),
@@ -355,7 +357,10 @@ class ProfilePage extends StatelessWidget {
         : (isDark ? AppColors.darkText : AppColors.lightText);
 
     return InkWell(
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
 import '../widgets/task_card.dart';
@@ -164,6 +165,7 @@ class _ActivityPageState extends State<ActivityPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          HapticFeedback.mediumImpact();
           // TODO: Implement add task functionality
         },
         backgroundColor: isDark ? AppColors.darkPrimary : AppColors.lightPrimary,
@@ -206,6 +208,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
                   return GestureDetector(
                     onTap: () {
+                      HapticFeedback.selectionClick();
                       setState(() {
                         _selectedDate = date;
                       });
@@ -255,6 +258,7 @@ class _ActivityPageState extends State<ActivityPage> {
               // Expand/Collapse icon
               GestureDetector(
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   setState(() {
                     _isWeekViewExpanded = !_isWeekViewExpanded;
                   });
@@ -319,6 +323,7 @@ class _ActivityPageState extends State<ActivityPage> {
             IconButton(
               icon: Icon(Icons.chevron_left, color: isDark ? AppColors.darkText : AppColors.lightText),
               onPressed: () {
+                HapticFeedback.lightImpact();
                 setState(() {
                   _selectedDate = DateTime(_selectedDate.year, _selectedDate.month - 1, 1);
                 });
@@ -335,6 +340,7 @@ class _ActivityPageState extends State<ActivityPage> {
             IconButton(
               icon: Icon(Icons.chevron_right, color: isDark ? AppColors.darkText : AppColors.lightText),
               onPressed: () {
+                HapticFeedback.lightImpact();
                 setState(() {
                   _selectedDate = DateTime(_selectedDate.year, _selectedDate.month + 1, 1);
                 });
@@ -389,6 +395,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
               return GestureDetector(
                 onTap: () {
+                  HapticFeedback.selectionClick();
                   setState(() {
                     _selectedDate = date;
                   });

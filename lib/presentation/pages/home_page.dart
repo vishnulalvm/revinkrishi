@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../bloc/weather/weather_bloc.dart';
@@ -134,7 +135,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                    },
                     child: Text(
                       'View Report',
                       style: Theme.of(
@@ -222,7 +225,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                    },
                     child: Text(
                       'View Details',
                       style: Theme.of(

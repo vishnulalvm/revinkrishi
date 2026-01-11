@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
 import '../widgets/custom_map_widget.dart';
@@ -126,6 +127,7 @@ class _FieldsPageState extends State<FieldsPage> {
           ),
           IconButton(
             onPressed: () {
+              HapticFeedback.mediumImpact();
               _mapController.moveToCurrentLocation();
             },
             icon: Icon(
@@ -144,6 +146,7 @@ class _FieldsPageState extends State<FieldsPage> {
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
       onPressed: () {
+        HapticFeedback.mediumImpact();
         _showAddFieldDialog();
       },
       backgroundColor: AppColors.lightPrimary,
@@ -258,7 +261,10 @@ class _FieldsPageState extends State<FieldsPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.pop(context);
+            },
             child: Text(
               'Cancel',
               style: TextStyle(
@@ -269,6 +275,7 @@ class _FieldsPageState extends State<FieldsPage> {
           ),
           ElevatedButton(
             onPressed: () {
+              HapticFeedback.mediumImpact();
               // TODO: Save field data
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(

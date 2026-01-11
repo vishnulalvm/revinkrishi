@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
 
@@ -43,7 +44,12 @@ class TaskCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap != null
+          ? () {
+              HapticFeedback.lightImpact();
+              onTap!();
+            }
+          : null,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         decoration: BoxDecoration(
@@ -134,7 +140,12 @@ class TaskCard extends StatelessWidget {
                   )
                 else if (showToggle)
                   GestureDetector(
-                    onTap: onToggle,
+                    onTap: onToggle != null
+                        ? () {
+                            HapticFeedback.mediumImpact();
+                            onToggle!();
+                          }
+                        : null,
                     child: Container(
                       width: 24.w,
                       height: 24.w,
