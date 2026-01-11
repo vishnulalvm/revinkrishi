@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_bottom_nav.dart';
+import '../../core/utils/responsive_utils.dart';
 import 'home_page.dart';
 import 'activity_page.dart';
 import 'fields_page.dart';
@@ -47,10 +48,15 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = ResponsiveUtils.isTabletOrLarger(context);
+
+    // For tablets, we use the same bottom navigation for consistency
+    // But the content will be responsive with better use of space
     return Scaffold(
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
+        physics: isTablet ? const NeverScrollableScrollPhysics() : null,
         children: _pages,
       ),
       bottomNavigationBar: CustomBottomNav(

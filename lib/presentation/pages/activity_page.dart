@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
 import '../widgets/task_card.dart';
+import '../../core/utils/responsive_utils.dart';
 
 class ActivityPage extends StatefulWidget {
   const ActivityPage({super.key});
@@ -18,6 +19,7 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final horizontalPadding = ResponsiveUtils.getHorizontalPadding(context);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
@@ -29,24 +31,25 @@ class _ActivityPageState extends State<ActivityPage> {
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
-          
+
           ),
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
+        child: ResponsiveContainer(
+          child: Column(
+            children: [
 
-            // Week View Bar
-            _buildWeekViewBar(isDark),
+              // Week View Bar
+              _buildWeekViewBar(isDark),
 
-    
-            SizedBox(height: 16.h),
 
-            // Tasks List
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
+              SizedBox(height: 16.h),
+
+              // Tasks List
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -156,6 +159,7 @@ class _ActivityPageState extends State<ActivityPage> {
               ),
             ),
           ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

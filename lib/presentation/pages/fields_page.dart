@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
 import '../widgets/custom_map_widget.dart';
+import '../../core/utils/responsive_utils.dart';
 
 class FieldsPage extends StatefulWidget {
   const FieldsPage({super.key});
@@ -35,7 +36,7 @@ class _FieldsPageState extends State<FieldsPage> {
                 _currentCoordinates = mapData.coordinates;
               });
             },
-            overlayContent: _buildMapOverlay(),
+            overlayContent: _buildMapOverlay(context),
           ),
         ],
       ),
@@ -44,23 +45,29 @@ class _FieldsPageState extends State<FieldsPage> {
     );
   }
 
-  Widget _buildMapOverlay() {
+  Widget _buildMapOverlay(BuildContext context) {
+    final horizontalPadding = ResponsiveUtils.getHorizontalPadding(context);
+    final isTablet = ResponsiveUtils.isTabletOrLarger(context);
+
     return SafeArea(
-      child: Column(
-        children: [
-          // Top Header
-          _buildTopHeader(),
-          const Spacer(),
-          // Bottom Info Card
-          _buildBottomInfoCard(),
-        ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+        child: Column(
+          children: [
+            // Top Header
+            _buildTopHeader(isTablet),
+            const Spacer(),
+            // Bottom Info Card
+            
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTopHeader() {
+  Widget _buildTopHeader(bool isTablet) {
     return Container(
-      margin: EdgeInsets.all(16.w),
+      margin: EdgeInsets.symmetric(vertical: 16.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -133,102 +140,6 @@ class _FieldsPageState extends State<FieldsPage> {
     );
   }
 
-  Widget _buildBottomInfoCard() {
-    return Container(
-      margin: EdgeInsets.all(16.w),
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: AppColors.lightCardBackground,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.grey400.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8.w),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.lightPrimary,
-                      AppColors.lightPrimaryLight,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.white,
-                  size: 20.sp,
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Text(
-                'Current Location',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.lightText,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          Container(
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: AppColors.lightBackground,
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                color: AppColors.lightPrimary.withValues(alpha: 0.2),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.pin_drop_rounded,
-                  size: 18.sp,
-                  color: AppColors.lightPrimary,
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Text(
-                    _currentCoordinates,
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.lightTextSecondary,
-                      fontFamily: 'monospace',
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    // TODO: Copy coordinates to clipboard
-                  },
-                  icon: Icon(
-                    Icons.copy_rounded,
-                    size: 18.sp,
-                    color: AppColors.lightPrimary,
-                  ),
-                  tooltip: 'Copy',
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(

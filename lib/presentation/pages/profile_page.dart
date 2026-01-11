@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
+import '../../core/utils/responsive_utils.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -8,26 +9,28 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final horizontalPadding = ResponsiveUtils.getHorizontalPadding(context);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-       
+
         centerTitle: true,
         title: Text(
           'Profile',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
-    
+
           ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
+          child: ResponsiveContainer(
+            child: Column(
+              children: [
               // Header Section
               Container(
                 width: double.infinity,
@@ -101,6 +104,7 @@ class ProfilePage extends StatelessWidget {
               _buildSection(
                 context,
                 isDark,
+                horizontalPadding,
                 'Farm Information',
                 [
                   _buildInfoTile(
@@ -134,6 +138,7 @@ class ProfilePage extends StatelessWidget {
               _buildSection(
                 context,
                 isDark,
+                horizontalPadding,
                 'Settings',
                 [
                   _buildSettingTile(
@@ -186,6 +191,7 @@ class ProfilePage extends StatelessWidget {
               _buildSection(
                 context,
                 isDark,
+                horizontalPadding,
                 'Account',
                 [
                   _buildSettingTile(
@@ -224,7 +230,8 @@ class ProfilePage extends StatelessWidget {
               ),
 
               SizedBox(height: 24.h),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -234,11 +241,12 @@ class ProfilePage extends StatelessWidget {
   Widget _buildSection(
     BuildContext context,
     bool isDark,
+    double horizontalPadding,
     String title,
     List<Widget> children,
   ) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
