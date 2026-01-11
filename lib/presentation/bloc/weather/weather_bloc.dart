@@ -16,13 +16,34 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     FetchWeatherByLocation event,
     Emitter<WeatherState> emit,
   ) async {
-    emit(const WeatherLoading());
+    // Try to load cached data first
+    final cachedResult = await repository.getCachedWeather();
 
+    cachedResult.fold(
+      (_) {
+        // No cache available, show loading
+        emit(const WeatherLoading());
+      },
+      (cachedWeather) {
+        // Show cached data immediately
+        emit(WeatherLoaded(cachedWeather, isFromCache: true));
+      },
+    );
+
+    // Fetch fresh data from API in background
     final result = await repository.getWeatherByCurrentLocation();
 
     result.fold(
-      (failure) => emit(WeatherError(failure.message)),
-      (weather) => emit(WeatherLoaded(weather)),
+      (failure) {
+        // Only show error if we don't have cached data
+        if (state is! WeatherLoaded) {
+          emit(WeatherError(failure.message));
+        }
+      },
+      (weather) {
+        // Update with fresh data from API
+        emit(WeatherLoaded(weather, isFromCache: false));
+      },
     );
   }
 
@@ -30,16 +51,37 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     FetchWeatherByCoordinates event,
     Emitter<WeatherState> emit,
   ) async {
-    emit(const WeatherLoading());
+    // Try to load cached data first
+    final cachedResult = await repository.getCachedWeather();
 
+    cachedResult.fold(
+      (_) {
+        // No cache available, show loading
+        emit(const WeatherLoading());
+      },
+      (cachedWeather) {
+        // Show cached data immediately
+        emit(WeatherLoaded(cachedWeather, isFromCache: true));
+      },
+    );
+
+    // Fetch fresh data from API in background
     final result = await repository.getWeather(
       lat: event.lat,
       lon: event.lon,
     );
 
     result.fold(
-      (failure) => emit(WeatherError(failure.message)),
-      (weather) => emit(WeatherLoaded(weather)),
+      (failure) {
+        // Only show error if we don't have cached data
+        if (state is! WeatherLoaded) {
+          emit(WeatherError(failure.message));
+        }
+      },
+      (weather) {
+        // Update with fresh data from API
+        emit(WeatherLoaded(weather, isFromCache: false));
+      },
     );
   }
 

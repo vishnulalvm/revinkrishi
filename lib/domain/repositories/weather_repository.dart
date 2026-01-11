@@ -9,4 +9,7 @@ abstract class WeatherRepository {
   });
 
   Future<Either<Failure, WeatherEntity>> getWeatherByCurrentLocation();
+
+  /// Get cached weather data if available
+  Future<Either<Failure, WeatherEntity>> getCachedWeather();
 }

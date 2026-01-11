@@ -80,8 +80,8 @@ class CustomBottomNav extends StatelessWidget {
             label: 'Activity',
           ),
           NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined),
-            selectedIcon: Icon(Icons.grid_view),
+            icon: Icon(Icons.map_outlined),
+            selectedIcon: Icon(Icons.map),
             label: 'Fields',
           ),
           NavigationDestination(

@@ -5,12 +5,17 @@ import '../../core/constants/api_constants.dart';
 import '../../core/error/failures.dart';
 import '../../domain/entities/weather_entity.dart';
 import '../../domain/repositories/weather_repository.dart';
+import '../datasources/local/weather_local_datasource.dart';
 import '../datasources/weather_remote_datasource.dart';
 
 class WeatherRepositoryImpl implements WeatherRepository {
   final WeatherRemoteDataSource remoteDataSource;
+  final WeatherLocalDataSource localDataSource;
 
-  WeatherRepositoryImpl({required this.remoteDataSource});
+  WeatherRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+  });
 
   @override
   Future<Either<Failure, WeatherEntity>> getWeather({
@@ -18,12 +23,17 @@ class WeatherRepositoryImpl implements WeatherRepository {
     required double lon,
   }) async {
     try {
+      // Fetch from API and cache the result
       final weatherModel = await remoteDataSource.getWeather(
         lat: lat,
         lon: lon,
         apiKey: ApiConstants.apiKey,
         units: ApiConstants.defaultUnits,
       );
+
+      // Cache the fresh data
+      await localDataSource.cacheWeather(weatherModel);
+
       return Right(weatherModel.toEntity());
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
@@ -85,6 +95,19 @@ class WeatherRepositoryImpl implements WeatherRepository {
       return const Left(PermissionFailure('Location permission denied'));
     } catch (e) {
       return Left(LocationFailure('Failed to get location: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, WeatherEntity>> getCachedWeather() async {
+    try {
+      final cachedWeatherModel = await localDataSource.getCachedWeather();
+      if (cachedWeatherModel != null) {
+        return Right(cachedWeatherModel.toEntity());
+      }
+      return const Left(ServerFailure('No cached data available'));
+    } catch (e) {
+      return Left(ServerFailure('Failed to load cached data: $e'));
     }
   }
 }
