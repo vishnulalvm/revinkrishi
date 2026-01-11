@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import '../../core/themes/app_colors.dart';
+import '../../core/constants/api_constants.dart';
 
 enum MapMode {
   display, // For home screen - simple display and tap updates
@@ -99,9 +100,7 @@ class _CustomMapWidgetState extends State<CustomMapWidget> {
 
   void _initializeMapbox() {
     if (!_isMapboxInitialized) {
-      MapboxOptions.setAccessToken(
-        'pk.eyJ1Ijoic29saWRhcHBzIiwiYSI6ImNtZGQwaXAzczAycmoyb3BzMWkyZm9pcXMifQ.B3j0rVy2fyaaljWCfGQj5Q',
-      );
+      MapboxOptions.setAccessToken(ApiConstants.mapboxAccessToken);
       _isMapboxInitialized = true;
     }
   }
