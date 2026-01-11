@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 
 class WeatherHeader extends StatefulWidget {
   const WeatherHeader({super.key});
@@ -149,14 +150,27 @@ class _WeatherHeaderState extends State<WeatherHeader> {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                // Temperature
-                Text(
-                  '72°',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 52.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+                // Temperature with Lottie Animation
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      '72°',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 52.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // const Spacer(),
+                    // Lottie Weather Animation
+                    Lottie.asset(
+                      'assets/lottie/Weather-partly cloudy.json',
+                      width: 40.w,
+                      height: 40.h,
+                      fit: BoxFit.contain,
+                    ),
+                  ],
                 ),
                 SizedBox(height: 6.h),
                 // Weather condition and precipitation

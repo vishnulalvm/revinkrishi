@@ -16,8 +16,8 @@ class AppColors {
 
   // Background & Surface
   static const Color lightBackground = Color(
-    0xFFF4F7F5,
-  ); // Sophisticated off-white with green tint
+    0xFFF0F8F2,
+  ); // Light green touch background
   static const Color lightSurface = Color(0xFFFFFFFF); // Pure white
   static const Color lightCardBackground = Color(0xFFFFFFFF); // White cards
 
