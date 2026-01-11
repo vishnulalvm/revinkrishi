@@ -13,15 +13,14 @@ class ProfilePage extends StatelessWidget {
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+       
         centerTitle: true,
         title: Text(
           'Profile',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
-            color: isDark ? AppColors.darkText : AppColors.lightText,
+    
           ),
         ),
       ),

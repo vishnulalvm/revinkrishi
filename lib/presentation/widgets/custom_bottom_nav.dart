@@ -16,96 +16,80 @@ class CustomBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-        boxShadow: [
-          BoxShadow(
+    return NavigationBarTheme(
+      data: NavigationBarThemeData(
+        // Icon color configuration for better visibility
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            // Selected icon: Use vibrant, high-contrast colors
+            return IconThemeData(
+              size: 24,
+              color: isDark
+                  ? AppColors.darkPrimary // Vibrant green for dark mode
+                  : AppColors.lightPrimaryDark, // Deep forest green for light mode
+            );
+          }
+          // Unselected icons: Use secondary text colors
+          return IconThemeData(
+            size: 24,
             color: isDark
-                ? Colors.black.withValues(alpha: 0.3)
-                : Colors.black.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
+                ? AppColors.darkTextSecondary
+                : AppColors.lightTextSecondary,
+          );
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+              color: isDark
+                  ? AppColors.darkPrimary
+                  : AppColors.lightPrimaryDark,
+            );
+          }
+          return TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w400,
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.lightTextSecondary,
+          );
+        }),
+      ),
+      child: NavigationBar(
+        selectedIndex: currentIndex,
+        onDestinationSelected: onTap,
+        backgroundColor: isDark
+            ? AppColors.darkSurface
+            : AppColors.lightSurface,
+        // Enhanced indicator with better contrast
+        indicatorColor: isDark
+            ? AppColors.darkPrimary.withValues(alpha: 0.15)
+            : AppColors.lightPrimaryLight.withValues(alpha: 0.12),
+        elevation: 2,
+        height: 65,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.analytics_outlined),
+            selectedIcon: Icon(Icons.analytics),
+            label: 'Activity',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.grid_view_outlined),
+            selectedIcon: Icon(Icons.grid_view),
+            label: 'Fields',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
-      ),
-      child: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(
-              context: context,
-              icon: Icons.home_outlined,
-              activeIcon: Icons.home,
-              label: 'Home',
-              index: 0,
-              isActive: currentIndex == 0,
-            ),
-            _buildNavItem(
-              context: context,
-              icon: Icons.analytics_outlined,
-              activeIcon: Icons.analytics,
-              label: 'Activity',
-              index: 1,
-              isActive: currentIndex == 1,
-            ),
-            _buildNavItem(
-              context: context,
-              icon: Icons.grid_view_outlined,
-              activeIcon: Icons.grid_view,
-              label: 'Fields',
-              index: 2,
-              isActive: currentIndex == 2,
-            ),
-            _buildNavItem(
-              context: context,
-              icon: Icons.person_outline,
-              activeIcon: Icons.person,
-              label: 'Profile',
-              index: 3,
-              isActive: currentIndex == 3,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required BuildContext context,
-    required IconData icon,
-    required IconData activeIcon,
-    required String label,
-    required int index,
-    required bool isActive,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? AppColors.darkPrimary : AppColors.lightPrimary;
-    final inactiveColor = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
-
-    return GestureDetector(
-      onTap: () => onTap(index),
-      child: Container(
-        padding: EdgeInsets.symmetric( vertical: 4.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              color: isActive ? activeColor : inactiveColor,
-              size: 24.sp,
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              label,
-              style: TextStyle(
-                color: isActive ? activeColor : inactiveColor,
-                fontSize: 12.sp,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

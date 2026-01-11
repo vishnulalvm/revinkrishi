@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../core/themes/app_colors.dart';
 
 class SensorCard extends StatelessWidget {
   final IconData icon;
@@ -22,99 +21,86 @@ class SensorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? AppColors.darkCardBackground : AppColors.lightCardBackground;
-    final textColor = isDark ? Colors.white : AppColors.lightText;
-    final secondaryTextColor = isDark ? Colors.white70 : AppColors.lightTextSecondary;
-
-    return Container(
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: cardColor,
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.r),
-        boxShadow: isDark
-            ? null
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+        side: BorderSide(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white10
+              : Colors.transparent,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Icon and Label
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8.w),
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8.r),
+      child: Padding(
+        padding: EdgeInsets.all(12.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon and Label
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 20.sp),
                 ),
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 20.sp,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Text(
-                label,
-                style: TextStyle(
-                  color: secondaryTextColor,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          // Value
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (subtitle != null) ...[
                 SizedBox(width: 8.w),
-                Padding(
-                  padding: EdgeInsets.only(bottom: 8.h),
-                  child: Text(
-                    subtitle!,
-                    style: TextStyle(
-                      color: Colors.green,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
-            ],
-          ),
-          if (chartData != null) ...[
-            SizedBox(height: 16.h),
-            // Simple Chart
-            SizedBox(
-              height: 30.h,
-              child: CustomPaint(
-                size: Size(double.infinity, 40.h),
-                painter: SimpleCurvePainter(
-                  data: chartData!,
-                  color: iconColor,
+            ),
+            SizedBox(height: 12.h),
+            // Value
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32.sp,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  SizedBox(width: 8.w),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 8.h),
+                    child: Text(
+                      subtitle!,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color:
+                            Colors.green, // Keep green for positive indicators
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            if (chartData != null) ...[
+              SizedBox(height: 16.h),
+              // Simple Chart
+              SizedBox(
+                height: 30.h,
+                child: CustomPaint(
+                  size: Size(double.infinity, 40.h),
+                  painter: SimpleCurvePainter(
+                    data: chartData!,
+                    color: iconColor,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
