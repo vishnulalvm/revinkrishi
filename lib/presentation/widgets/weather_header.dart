@@ -14,8 +14,36 @@ class WeatherHeader extends StatefulWidget {
   State<WeatherHeader> createState() => _WeatherHeaderState();
 }
 
-class _WeatherHeaderState extends State<WeatherHeader> {
+class _WeatherHeaderState extends State<WeatherHeader>
+    with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
+  late AnimationController _zoomController;
+  late Animation<double> _zoomAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _zoomController = AnimationController(
+      duration: const Duration(milliseconds: 3000),
+      vsync: this,
+    );
+
+    _zoomAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _zoomController,
+      curve: Curves.easeOut,
+    ));
+
+    _zoomController.forward();
+  }
+
+  @override
+  void dispose() {
+    _zoomController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,16 +62,27 @@ class _WeatherHeaderState extends State<WeatherHeader> {
   }
 
   Widget _buildWeatherContent(WeatherEntity weather) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/weather.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
       child: Stack(
         children: [
+          // Animated Background Image
+          Positioned.fill(
+            child: ClipRect(
+              child: AnimatedBuilder(
+                animation: _zoomAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _zoomAnimation.value,
+                    child: Image.asset(
+                      'assets/images/weather.png',
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
           // Overall gradient overlay
           Container(
             decoration: BoxDecoration(
@@ -246,30 +285,29 @@ class _WeatherHeaderState extends State<WeatherHeader> {
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   child: _isExpanded
-                      ? Column(
-                          children: [
-                            SizedBox(height: 16.h),
-                            SizedBox(
-                              height: 70.h,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: weather.daily.length > 7
-                                    ? 7
-                                    : weather.daily.length,
-                                itemBuilder: (context, index) {
-                                  final day = weather.daily[index];
-                                  return _buildWeatherDay(
-                                    WeatherUtils.getShortDayName(day.date),
-                                    WeatherUtils.getWeatherIcon(
-                                        day.weatherIcon),
-                                    WeatherUtils.formatTemp(day.tempMax),
-                                    WeatherUtils.formatTemp(day.tempMin),
-                                    index == 0,
-                                  );
-                                },
-                              ),
+                      ? Padding(
+                          padding: EdgeInsets.only(top: 16.h, bottom: 8.h),
+                          child: SizedBox(
+                            height: 80.h,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: weather.daily.length > 7
+                                  ? 7
+                                  : weather.daily.length,
+                              itemBuilder: (context, index) {
+                                final day = weather.daily[index];
+                                return _buildWeatherDay(
+                                  WeatherUtils.getShortDayName(day.date),
+                                  WeatherUtils.getWeatherIcon(
+                                      day.weatherIcon),
+                                  WeatherUtils.formatTemp(day.tempMax),
+                                  WeatherUtils.formatTemp(day.tempMin),
+                                  index == 0,
+                                );
+                              },
                             ),
-                          ],
+                          ),
                         )
                       : const SizedBox.shrink(),
                 ),
@@ -290,9 +328,8 @@ class _WeatherHeaderState extends State<WeatherHeader> {
   ) {
     return Container(
       width: 65.w,
-      height: 70.h,
       margin: EdgeInsets.only(right: 8.w),
-      padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 6.w),
+      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
       decoration: BoxDecoration(
         color: isSelected
             ? Colors.white.withValues(alpha: 0.25)
@@ -338,16 +375,27 @@ class _WeatherHeaderState extends State<WeatherHeader> {
   }
 
   Widget _buildLoadingSkeleton() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/weather.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
       child: Stack(
         children: [
+          // Animated Background Image
+          Positioned.fill(
+            child: ClipRect(
+              child: AnimatedBuilder(
+                animation: _zoomAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _zoomAnimation.value,
+                    child: Image.asset(
+                      'assets/images/weather.png',
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
           // Overall gradient overlay
           Container(
             decoration: BoxDecoration(
