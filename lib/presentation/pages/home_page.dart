@@ -11,6 +11,7 @@ import '../widgets/nitrogen_card.dart';
 import '../widgets/crop_health_card.dart';
 import '../widgets/crop_test_card.dart';
 import '../widgets/quick_action_button.dart';
+import '../widgets/soil_ph_card.dart';
 import '../../core/utils/responsive_utils.dart';
 
 class HomePage extends StatefulWidget {
@@ -245,36 +246,42 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: isTablet
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  ? Column(
                       children: [
-                        const Expanded(
-                          child: CropHealthCard(),
-                        ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: BlocBuilder<WeatherBloc, WeatherState>(
-                            builder: (context, state) {
-                              final temperature = state is WeatherLoaded
-                                  ? state.weather.current.temp
-                                  : null;
-                              final humidity = state is WeatherLoaded
-                                  ? state.weather.current.humidity
-                                  : null;
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Expanded(
+                              child: CropHealthCard(),
+                            ),
+                            SizedBox(width: 16.w),
+                            Expanded(
+                              child: BlocBuilder<WeatherBloc, WeatherState>(
+                                builder: (context, state) {
+                                  final temperature = state is WeatherLoaded
+                                      ? state.weather.current.temp
+                                      : null;
+                                  final humidity = state is WeatherLoaded
+                                      ? state.weather.current.humidity
+                                      : null;
 
-                              return CropTestCard(
-                                cropName: 'Turmeric',
-                                fieldId: 'L1',
-                                lastSync: '1:36 AM, 22/11/24',
-                                batteryLevel: 82,
-                                currentStage: 'germination',
-                                temperature: temperature,
-                                humidity: humidity,
-                                soilMoisture: 41.0,
-                              );
-                            },
-                          ),
+                                  return CropTestCard(
+                                    cropName: 'Turmeric',
+                                    fieldId: 'L1',
+                                    lastSync: '1:36 AM, 22/11/24',
+                                    batteryLevel: 82,
+                                    currentStage: 'germination',
+                                    temperature: temperature,
+                                    humidity: humidity,
+                                    soilMoisture: 41.0,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
+                        SizedBox(height: 16.h),
+                        const SoilPhCard(),
                       ],
                     )
                   : Column(
@@ -302,6 +309,8 @@ class _HomePageState extends State<HomePage> {
                             );
                           },
                         ),
+                        SizedBox(height: 16.h),
+                        const SoilPhCard(),
                       ],
                     ),
             ),
