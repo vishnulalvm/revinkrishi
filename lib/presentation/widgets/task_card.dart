@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/themes/app_colors.dart';
 
-class TaskCard extends StatelessWidget {
+class TaskCard extends StatefulWidget {
   final String title;
   final String? priorityLabel;
   final Color priorityColor;
@@ -17,6 +17,8 @@ class TaskCard extends StatelessWidget {
   final bool showToggle;
   final VoidCallback? onTap;
   final VoidCallback? onToggle;
+  final VoidCallback? onFinish;
+  final VoidCallback? onCancel;
   final bool isFirst;
   final bool isLast;
 
@@ -35,26 +37,38 @@ class TaskCard extends StatelessWidget {
     this.showToggle = false,
     this.onTap,
     this.onToggle,
+    this.onFinish,
+    this.onCancel,
     this.isFirst = false,
     this.isLast = false,
   });
+
+  @override
+  State<TaskCard> createState() => _TaskCardState();
+}
+
+class _TaskCardState extends State<TaskCard> {
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
-      onTap: onTap != null
-          ? () {
-              HapticFeedback.lightImpact();
-              onTap!();
-            }
-          : null,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        if (widget.onTap != null) {
+          widget.onTap!();
+        }
+        setState(() {
+          _isExpanded = !_isExpanded;
+        });
+      },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         decoration: BoxDecoration(
           border: Border(
-            bottom: isLast
+            bottom: widget.isLast
                 ? BorderSide.none
                 : BorderSide(
                     color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
@@ -77,15 +91,15 @@ class TaskCard extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        iconColor.withValues(alpha: 0.2),
-                        iconColor.withValues(alpha: 0.1),
+                        widget.iconColor.withValues(alpha: 0.2),
+                        widget.iconColor.withValues(alpha: 0.1),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
-                    icon,
-                    color: iconColor,
+                    widget.icon,
+                    color: widget.iconColor,
                     size: 22.sp,
                   ),
                 ),
@@ -96,12 +110,12 @@ class TaskCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        title,
+                        widget.title,
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w600,
                           color: isDark ? AppColors.darkText : AppColors.lightText,
-                          decoration: isCompleted ? TextDecoration.lineThrough : null,
+                          decoration: widget.isCompleted ? TextDecoration.lineThrough : null,
                           decorationColor: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                         ),
                         maxLines: 1,
@@ -109,7 +123,7 @@ class TaskCard extends StatelessWidget {
                       ),
                       SizedBox(height: 3.h),
                       Text(
-                        subtitle,
+                        widget.subtitle,
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
@@ -121,47 +135,47 @@ class TaskCard extends StatelessWidget {
                   ),
                 ),
                 // Priority badge or action button
-                if (priorityLabel != null)
+                if (widget.priorityLabel != null)
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
-                      color: priorityColor.withValues(alpha: 0.15),
+                      color: widget.priorityColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(6.r),
                     ),
                     child: Text(
-                      priorityLabel!,
+                      widget.priorityLabel!,
                       style: TextStyle(
                         fontSize: 9.sp,
                         fontWeight: FontWeight.bold,
-                        color: priorityColor,
+                        color: widget.priorityColor,
                         letterSpacing: 0.5,
                       ),
                     ),
                   )
-                else if (showToggle)
+                else if (widget.showToggle)
                   GestureDetector(
-                    onTap: onToggle != null
+                    onTap: widget.onToggle != null
                         ? () {
                             HapticFeedback.mediumImpact();
-                            onToggle!();
+                            widget.onToggle!();
                           }
                         : null,
                     child: Container(
                       width: 24.w,
                       height: 24.w,
                       decoration: BoxDecoration(
-                        color: isCompleted
+                        color: widget.isCompleted
                             ? AppColors.success
                             : Colors.transparent,
                         border: Border.all(
-                          color: isCompleted
+                          color: widget.isCompleted
                               ? AppColors.success
                               : (isDark ? AppColors.grey600 : AppColors.grey400),
                           width: 2,
                         ),
                         borderRadius: BorderRadius.circular(6.r),
                       ),
-                      child: isCompleted
+                      child: widget.isCompleted
                           ? Icon(
                               Icons.check,
                               size: 16.sp,
@@ -197,7 +211,7 @@ class TaskCard extends StatelessWidget {
                       ),
                       SizedBox(width: 5.w),
                       Text(
-                        time,
+                        widget.time,
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w500,
@@ -227,7 +241,7 @@ class TaskCard extends StatelessWidget {
                       ),
                       SizedBox(width: 5.w),
                       Text(
-                        duration,
+                        widget.duration,
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w500,
@@ -239,7 +253,7 @@ class TaskCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 // Status indicator
-                if (isCompleted)
+                if (widget.isCompleted)
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
@@ -267,6 +281,98 @@ class TaskCard extends StatelessWidget {
                     ),
                   ),
               ],
+            ),
+
+            // Expandable action buttons
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child: _isExpanded
+                  ? Column(
+                      children: [
+                        SizedBox(height: 12.h),
+                        Row(
+                          children: [
+                            // Finish button
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  HapticFeedback.mediumImpact();
+                                  if (widget.onFinish != null) {
+                                    widget.onFinish!();
+                                  }
+                                  setState(() {
+                                    _isExpanded = false;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isDark ? AppColors.darkPrimary : AppColors.lightPrimary,
+                                  foregroundColor: isDark ? AppColors.black : AppColors.white,
+                                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.check_circle, size: 18.sp),
+                                    SizedBox(width: 6.w),
+                                    Text(
+                                      'Finish',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            // Cancel button
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  HapticFeedback.mediumImpact();
+                                  if (widget.onCancel != null) {
+                                    widget.onCancel!();
+                                  }
+                                  setState(() {
+                                    _isExpanded = false;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isDark ? AppColors.grey700 : AppColors.grey300,
+                                  foregroundColor: isDark ? AppColors.darkText : AppColors.lightText,
+                                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.close, size: 18.sp),
+                                    SizedBox(width: 6.w),
+                                    Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         ),

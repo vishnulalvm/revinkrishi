@@ -46,3 +46,9 @@ app.*.map.json
 
 # API Keys and Secrets - NEVER COMMIT THESE!
 lib/core/constants/api_constants.dart
+
+# Android signing files - NEVER COMMIT THESE!
+android/key.properties
+android/app/my-release-key.jks
+*.jks
+*.keystore
